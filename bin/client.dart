@@ -1,4 +1,5 @@
 import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
 
 import 'parser.dart';
 import 'requester.dart';
@@ -9,7 +10,7 @@ var logger = Logger(
   printer: PrettyPrinter(),
 );
 
-class Client {
+class Client extends http.BaseClient {
   List agentOptions;
   bool headers;
   String host;
@@ -23,6 +24,7 @@ class Client {
   String version;
   Parser parser;
   Requester requester;
+  final Map _data = {};
 
   Client({
     this.agentOptions,
@@ -34,5 +36,32 @@ class Client {
     if (!networks.keys.contains(network)) {
       throw Exception('Invalid network name $network');
     }
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    print(invocation.positionalArguments);
+    if (invocation.isGetter) {
+      var ret = invocation.memberName.toString();
+      if (ret != null) {
+        return ret;
+      } else {
+        super.noSuchMethod(invocation);
+      }
+    }
+    if (invocation.isSetter) {
+      _data[invocation.memberName.toString().replaceAll('=', '')] =
+          invocation.positionalArguments.first;
+    } else {
+      super.noSuchMethod(invocation);
+    }
+  }
+
+  Client prepareConnection() {}
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    // TODO: implement send
+    throw UnimplementedError();
   }
 }
