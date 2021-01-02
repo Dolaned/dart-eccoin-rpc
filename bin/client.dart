@@ -1,8 +1,10 @@
+import 'dart:io';
+import 'dart:mirrors';
+import 'dart:convert';
+
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
-
-import 'parser.dart';
-import 'requester.dart';
+import 'package:http_auth/http_auth.dart' as http_auth;
 
 const networks = {'mainnet': 19119, 'regtest': 40001, 'testnet': 30001};
 
@@ -10,58 +12,56 @@ var logger = Logger(
   printer: PrettyPrinter(),
 );
 
-class Client extends http.BaseClient {
-  List agentOptions;
-  bool headers;
+class Client {
   String host;
-  Logger logger;
-  String network;
-  String password;
   int port;
-  bool ssl;
-  int timeout;
   String username;
-  String version;
-  Parser parser;
-  Requester requester;
-  final Map _data = {};
+  String password;
+  String network;
 
-  Client({
-    this.agentOptions,
-    this.headers = false,
-    this.host = 'localhost',
-    this.logger,
-    this.network = 'mainnet',
-  }) {
-    if (!networks.keys.contains(network)) {
-      throw Exception('Invalid network name $network');
-    }
+  Logger logger;
+
+  Client({this.host, this.port, this.network, this.username, this.password}) {
+    port = networks['mainnet'];
+    host ??= '127.0.0.1';
   }
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
-    print(invocation.positionalArguments);
+    // print(invocation.positionalArguments);
     if (invocation.isGetter) {
-      var ret = invocation.memberName.toString();
-      if (ret != null) {
-        return ret;
-      } else {
-        super.noSuchMethod(invocation);
-      }
+      var ret = MirrorSystem.getName(invocation.memberName);
+      ret = ret.toLowerCase();
+      return prepareConnection(ret, []);
     }
+
     if (invocation.isSetter) {
-      _data[invocation.memberName.toString().replaceAll('=', '')] =
-          invocation.positionalArguments.first;
-    } else {
-      super.noSuchMethod(invocation);
+      var ret = MirrorSystem.getName(invocation.memberName);
+      ret = ret.toLowerCase();
+      return prepareConnection(ret, invocation.positionalArguments.first);
     }
   }
 
-  Client prepareConnection() {}
+  Future<dynamic> prepareConnection(var methodName, var params) async {
+    var client = http_auth.BasicAuthClient('yourusername', 'yourpassword');
+    var headers = {'Content-Type': 'application/json'};
+    var url = 'http://$host:$port';
+    var body = {
+      'jsonrpc': '2.0',
+      'method': methodName,
+      'params': params,
+      'id': '1'
+    };
 
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) {
-    // TODO: implement send
-    throw UnimplementedError();
+    var response =
+        await client.post(url, body: json.encode(body), headers: headers);
+
+    if (response.statusCode == HttpStatus.ok) {
+      var result = json.decode(response.body)['result'];
+      return result;
+    } else if (response.statusCode == HttpStatus.unauthorized) {
+      throw http.ClientException('not authorized');
+    }
+    return {};
   }
 }
