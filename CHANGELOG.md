@@ -9,3 +9,7 @@
 ## 1.0.2
 
 - Added source directory
+
+## 1.0.3
+
+- Fix directory Structure

@@ -1,6 +1,4 @@
-import '../lib/Exceptions/HTTPException.dart';
-import '../lib/Exceptions/RPCException.dart';
-import '../lib/src/rpcclient.dart';
+import 'package:bitcoinrpc/bitcoinrpc.dart';
 
 void main(List<String> arguments) async {
   dynamic client =
