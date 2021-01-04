@@ -3,11 +3,10 @@ import 'dart:mirrors';
 import 'dart:convert';
 
 import 'package:logger/logger.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_auth/http_auth.dart' as http_auth;
 
-import 'Exceptions/HTTPException.dart';
-import 'Exceptions/RPCException.dart';
+import '../Exceptions/HTTPException.dart';
+import '../Exceptions/RPCException.dart';
 
 const networks = {'mainnet': 19119, 'regtest': 40001, 'testnet': 30001};
 
