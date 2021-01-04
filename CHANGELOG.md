@@ -5,3 +5,7 @@
 ## 1.0.1
 
 - Add in exporting of lib
+
+## 1.0.2
+
+- Added source directory

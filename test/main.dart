@@ -1,6 +1,6 @@
-import '../Exceptions/HTTPException.dart';
-import '../Exceptions/RPCException.dart';
-import '../rpcclient.dart';
+import '../lib/Exceptions/HTTPException.dart';
+import '../lib/Exceptions/RPCException.dart';
+import '../lib/src/rpcclient.dart';
 
 void main(List<String> arguments) async {
   dynamic client =
