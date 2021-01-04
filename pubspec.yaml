@@ -1,5 +1,5 @@
-name: eccoinrpc
-description: A simple command-line application.
+name: bitcoinrpc
+description: A simple RPC client for bitcoin created in dart.
 # version: 1.0.0
 # homepage: https://www.example.com
 
