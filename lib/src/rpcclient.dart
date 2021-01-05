@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:mirrors';
 import 'dart:convert';
 
 import 'package:logger/logger.dart';
@@ -39,14 +38,16 @@ class RPCClient {
   @override
   dynamic noSuchMethod(Invocation invocation) {
     if (invocation.isGetter) {
-      var ret = MirrorSystem.getName(invocation.memberName);
-      ret = ret.toLowerCase();
+      var s = invocation.memberName.toString();
+      s = s.substring(8, s.length - 2);
+      var ret = s.toLowerCase();
       return call(ret, []);
     }
 
     if (invocation.isSetter) {
-      var ret = MirrorSystem.getName(invocation.memberName);
-      ret = ret.toLowerCase();
+      var s = invocation.memberName.toString();
+      s = s.substring(8, s.length - 2);
+      var ret = s.toLowerCase();
       return call(ret, invocation.positionalArguments.first);
     }
   }
