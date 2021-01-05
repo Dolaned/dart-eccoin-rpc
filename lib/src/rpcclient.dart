@@ -62,7 +62,7 @@ class RPCClient {
 
   void readConfigFile() {}
 
-  Future<Map> call(var methodName, var params) async {
+  Future<dynamic> call(var methodName, var params) async {
     // Build rpc auth headers.
     var client = http_auth.BasicAuthClient(username, password);
     var headers = {'Content-Type': 'application/json'};

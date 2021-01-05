@@ -13,3 +13,11 @@
 ## 1.0.3
 
 - Fix directory Structure
+
+## 1.0.4
+
+- removed dart mirrors
+
+## 1.0.5
+
+- Changed return type to dynamic
