@@ -6,7 +6,7 @@ void main(List<String> arguments) async {
   // print(await client.getInfo);
   // print(await client.getBestBlockHash);
   try {
-    var data = await client.getWalletInfo;
+    var data = await client.getnewaddress;
     print(data);
   } on HTTPException catch (e) {
     print(e.toString());

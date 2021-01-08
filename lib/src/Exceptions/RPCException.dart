@@ -2,7 +2,7 @@ class RPCException implements Exception {
   String error;
   String errorMsg;
   String method;
-  Map params;
+  List params;
 
   var ERROR_CODES = {
     // # Standard JSON-RPC 2.0 errors

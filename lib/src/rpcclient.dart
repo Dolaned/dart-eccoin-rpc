@@ -47,8 +47,35 @@ class RPCClient {
     if (invocation.isSetter) {
       var s = invocation.memberName.toString();
       s = s.substring(8, s.length - 2);
-      var ret = s.toLowerCase();
-      return call(ret, invocation.positionalArguments.first);
+      var method = s.toLowerCase();
+      var args = [];
+      if (invocation.positionalArguments.length > 1) {
+        args = invocation.positionalArguments;
+      } else {
+        if (invocation.positionalArguments.first is List) {
+          args = invocation.positionalArguments.first;
+        } else {
+          args = [invocation.positionalArguments.first];
+        }
+      }
+      return call(method, args);
+    }
+
+    if (invocation.isMethod) {
+      var s = invocation.memberName.toString();
+      s = s.substring(8, s.length - 2);
+      var method = s.toLowerCase();
+      var args = [];
+      if (invocation.positionalArguments.length > 1) {
+        args = invocation.positionalArguments;
+      } else {
+        if (invocation.positionalArguments.first is List) {
+          args = invocation.positionalArguments.first;
+        } else {
+          args = [invocation.positionalArguments.first];
+        }
+      }
+      return call(method, args);
     }
   }
 
