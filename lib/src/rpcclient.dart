@@ -135,7 +135,7 @@ class RPCClient {
         code: 500,
         message: e.message,
       );
-    } finally {
+    } catch (e) {
       throw HTTPException(
         code: 500,
         message: 'cannot connect to host',
