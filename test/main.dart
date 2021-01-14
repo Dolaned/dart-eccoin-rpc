@@ -7,6 +7,10 @@ void main(List<String> arguments) async {
   // print(await client.getBestBlockHash);
   try {
     var data = await client.getnewaddress;
+    var buf = await client.registerBuffer(1);
+    print(buf);
+    var buf2 = await client.registerBuffer(1);
+    print(buf2);
     print(data);
   } on HTTPException catch (e) {
     print(e.toString());

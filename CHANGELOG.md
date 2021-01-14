@@ -29,3 +29,12 @@
 ## 1.0.7
 
 - catch socket exception when the host cannot be contacted
+
+
+## 1.0.8
+
+- remove finally.
+
+## 1.0.9
+
+- Cleaned up exception handling.

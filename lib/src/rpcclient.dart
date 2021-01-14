@@ -110,8 +110,13 @@ class RPCClient {
         case HttpStatus.ok:
           var body = json.decode(response.body);
           if (body['error'] != null) {
+            var error = body['error']['message'];
             throw RPCException(
-                error: body['error'], method: methodName, params: params);
+              errorCode: error['code'],
+              errorMsg: error['message'],
+              method: methodName,
+              params: params,
+            );
           }
           return body['result'];
           break;
@@ -120,6 +125,18 @@ class RPCClient {
           throw HTTPException(
               code: response.statusCode, message: 'Unauthorized');
         case HttpStatus.internalServerError:
+          if (response.body != null) {
+            var body = json.decode(response.body);
+            if (body['error'] != null) {
+              var error = body['error'];
+              throw RPCException(
+                errorCode: error['code'],
+                errorMsg: error['message'],
+                method: methodName,
+                params: params,
+              );
+            }
+          }
           throw HTTPException(
             code: response.statusCode,
             message: 'Internal Server Error',
@@ -136,10 +153,7 @@ class RPCClient {
         message: e.message,
       );
     } catch (e) {
-      throw HTTPException(
-        code: 500,
-        message: 'cannot connect to host',
-      );
+      rethrow;
     }
   }
 }

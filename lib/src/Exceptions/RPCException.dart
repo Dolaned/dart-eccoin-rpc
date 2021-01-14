@@ -1,6 +1,7 @@
 class RPCException implements Exception {
-  String error;
+  int errorCode;
   String errorMsg;
+  String errorType;
   String method;
   List params;
 
@@ -44,16 +45,24 @@ class RPCException implements Exception {
     -17: 'RpcWalletAlreadyUnlocked'
   };
 
-  RPCException({this.error, this.method, this.params}) {
-    errorMsg = ERROR_CODES[error];
-  }
+  RPCException({
+    this.errorCode,
+    this.errorMsg,
+    this.errorType,
+    this.method,
+    this.params,
+  });
 
   String get rpcError {
-    return ERROR_CODES[error];
+    return ERROR_CODES[errorCode];
+  }
+
+  String get message {
+    return errorMsg;
   }
 
   @override
   String toString() {
-    return '$error : $rpcError';
+    return '$errorCode : $errorMsg';
   }
 }
