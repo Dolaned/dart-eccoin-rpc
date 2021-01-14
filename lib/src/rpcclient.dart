@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:logger/logger.dart';
 import 'package:http_auth/http_auth.dart' as http_auth;
-
+import 'package:http/http.dart';
 import 'Exceptions/HTTPException.dart';
 import 'Exceptions/RPCException.dart';
 
@@ -102,27 +102,44 @@ class RPCClient {
       'id': '1'
     };
 
-    var response =
-        await client.post(url, body: json.encode(body), headers: headers);
+    try {
+      var response =
+          await client.post(url, body: json.encode(body), headers: headers);
 
-    switch (response.statusCode) {
-      case HttpStatus.ok:
-        var body = json.decode(response.body);
-        if (body['error'] != null) {
-          throw RPCException(
-              error: body['error'], method: methodName, params: params);
-        }
-        return body['result'];
-        break;
-      case HttpStatus.unauthorized:
-      case HttpStatus.forbidden:
-        throw HTTPException(code: response.statusCode, message: 'Unauthorized');
-      case HttpStatus.internalServerError:
-        throw HTTPException(
-            code: response.statusCode, message: 'Internal Server Error');
-      default:
-        throw HTTPException(
-            code: response.statusCode, message: 'Internal Server Error');
+      switch (response.statusCode) {
+        case HttpStatus.ok:
+          var body = json.decode(response.body);
+          if (body['error'] != null) {
+            throw RPCException(
+                error: body['error'], method: methodName, params: params);
+          }
+          return body['result'];
+          break;
+        case HttpStatus.unauthorized:
+        case HttpStatus.forbidden:
+          throw HTTPException(
+              code: response.statusCode, message: 'Unauthorized');
+        case HttpStatus.internalServerError:
+          throw HTTPException(
+            code: response.statusCode,
+            message: 'Internal Server Error',
+          );
+        default:
+          throw HTTPException(
+            code: response.statusCode,
+            message: 'Internal Server Error',
+          );
+      }
+    } on SocketException catch (e) {
+      throw HTTPException(
+        code: 500,
+        message: e.message,
+      );
+    } finally {
+      throw HTTPException(
+        code: 500,
+        message: 'cannot connect to host',
+      );
     }
   }
 }

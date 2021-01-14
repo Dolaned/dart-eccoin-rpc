@@ -25,3 +25,7 @@
 ## 1.0.6
 
 - Added in more parameter flexibility for passing in arguments to the method calls
+
+## 1.0.7
+
+- catch socket exception when the host cannot be contacted
