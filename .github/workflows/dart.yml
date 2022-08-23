@@ -21,13 +21,13 @@ jobs:
         run: |
           echo "Running Container"
 
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+    - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
-      - name: Install dependencies
-        run: dart pub get
+    - name: Install dependencies
+      run: dart pub get
 
-      - name: Analyze project source
-        run: dart analyze
+    - name: Analyze project source
+      run: dart analyze
 
-      - name: Run tests
-        run: dart test
+    - name: Run tests
+      run: dart test
