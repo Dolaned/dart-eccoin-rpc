@@ -1,0 +1,36 @@
+
+name: Dart
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  run-ppc-container: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v2 
+    - uses: addnab/docker-run-action@v3
+      with:
+        image:  peercoin/peercoind:latest
+        options: --env RPC_USER="rpc" --env RPC_PASSWORD="password" --expose 9902 -p "9902:9902"
+        run: |
+          echo "Running Container"
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze project source
+        run: dart analyze
+
+      - name: Run tests
+        run: dart test
