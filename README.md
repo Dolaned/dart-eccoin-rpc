@@ -1,5 +1,5 @@
 <a href="https://pub.dartlang.org/packages/dart_coin_rpc"><img alt="pub version" src="https://img.shields.io/pub/v/dart_coin_rpc?style=flat-squaree"></a>
-[![Tests](https://github.com/Vesta-wallet/dart-coin-rpc/actions/workflows/tests.yml/badge.svg)](https://github.com/Vesta-wallet/dart-coin-rpc/action/workflows/tests.yml)
+[![Tests](https://github.com/Vesta-wallet/dart-coin-rpc/actions/workflows/tests.yml/badge.svg)](https://github.com/Vesta-wallet/dart-coin-rpc/actions/workflows/tests.yml)
 
 Forked from https://github.com/Dolaned/dart-eccoin-rpc
 
