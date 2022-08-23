@@ -1,14 +1,3 @@
-Forked from https://github.com/Dolaned/dart-eccoin-rpc
-
-Small libarary that allows JSON communcation with bitcoin-like RPC servers.
-
-## Supported Coins
-- Peercoin 
-- Bitcoin
-- a lot of Bitcoin clones, please advise 
-
-## Example
-```dart
 import 'package:dart_coin_rpc/dart_coin_rpc.dart';
 
 void main() async {
@@ -24,5 +13,3 @@ void main() async {
       .call('validateaddress', ["p92W3t7YkKfQEPDb7cG9jQ6iMh7cpKLvwK"]) as Map;
   assert(res["isvalid"] == true);
 }
-
-```

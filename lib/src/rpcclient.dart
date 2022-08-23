@@ -1,39 +1,24 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:logger/logger.dart';
 import 'package:http_auth/http_auth.dart' as http_auth;
-import 'package:http/http.dart';
-import 'Exceptions/HTTPException.dart';
-import 'Exceptions/RPCException.dart';
-
-const networks = {'mainnet': 19119, 'regtest': 40001, 'testnet': 30001};
-
-var logger = Logger(
-  printer: PrettyPrinter(),
-);
+import 'Exceptions/http_exception.dart';
+import 'Exceptions/rpc_exception.dart';
 
 class RPCClient {
   String host;
   int port;
   String username;
   String password;
-  String network;
-  bool useSSL = false;
+  bool useSSL;
 
-  Logger logger;
-
-  RPCClient(
-      {this.host,
-      this.port,
-      this.network,
-      this.username,
-      this.password,
-      this.useSSL}) {
-    port = networks['mainnet'];
-    host ??= '127.0.0.1';
-    useSSL = false;
-  }
+  RPCClient({
+    required this.host,
+    required this.port,
+    required this.username,
+    required this.password,
+    required this.useSSL,
+  });
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -48,7 +33,7 @@ class RPCClient {
       var s = invocation.memberName.toString();
       s = s.substring(8, s.length - 2);
       var method = s.toLowerCase();
-      var args = [];
+      List<dynamic>? args = [];
       if (invocation.positionalArguments.length > 1) {
         args = invocation.positionalArguments;
       } else {
@@ -65,7 +50,7 @@ class RPCClient {
       var s = invocation.memberName.toString();
       s = s.substring(8, s.length - 2);
       var method = s.toLowerCase();
-      var args = [];
+      List<dynamic>? args = [];
       if (invocation.positionalArguments.length > 1) {
         args = invocation.positionalArguments;
       } else {
@@ -87,9 +72,7 @@ class RPCClient {
     return '$urlString$host:$port';
   }
 
-  void readConfigFile() {}
-
-  Future<dynamic> call(var methodName, var params) async {
+  Future<dynamic> call(var methodName, [var params]) async {
     // Build rpc auth headers.
     var client = http_auth.BasicAuthClient(username, password);
     var headers = {'Content-Type': 'application/json'};
@@ -98,13 +81,16 @@ class RPCClient {
     var body = {
       'jsonrpc': '2.0',
       'method': methodName,
-      'params': params,
+      'params': params ?? [],
       'id': '1'
     };
 
     try {
-      var response =
-          await client.post(url, body: json.encode(body), headers: headers);
+      var response = await client.post(
+        Uri.parse(url),
+        body: json.encode(body),
+        headers: headers,
+      );
 
       switch (response.statusCode) {
         case HttpStatus.ok:
@@ -119,23 +105,22 @@ class RPCClient {
             );
           }
           return body['result'];
-          break;
         case HttpStatus.unauthorized:
         case HttpStatus.forbidden:
           throw HTTPException(
-              code: response.statusCode, message: 'Unauthorized');
+            code: response.statusCode,
+            message: 'Unauthorized',
+          );
         case HttpStatus.internalServerError:
-          if (response.body != null) {
-            var body = json.decode(response.body);
-            if (body['error'] != null) {
-              var error = body['error'];
-              throw RPCException(
-                errorCode: error['code'],
-                errorMsg: error['message'],
-                method: methodName,
-                params: params,
-              );
-            }
+          var body = json.decode(response.body);
+          if (body['error'] != null) {
+            var error = body['error'];
+            throw RPCException(
+              errorCode: error['code'],
+              errorMsg: error['message'],
+              method: methodName,
+              params: params,
+            );
           }
           throw HTTPException(
             code: response.statusCode,

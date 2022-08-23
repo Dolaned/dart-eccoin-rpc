@@ -1,11 +1,10 @@
 class RPCException implements Exception {
   int errorCode;
   String errorMsg;
-  String errorType;
   String method;
   List params;
 
-  var ERROR_CODES = {
+  var errorCodes = {
     // # Standard JSON-RPC 2.0 errors
     -32600: 'RpcInvalidRequest',
     -32601: 'RpcMethodNotFound',
@@ -46,18 +45,17 @@ class RPCException implements Exception {
   };
 
   RPCException({
-    this.errorCode,
-    this.errorMsg,
-    this.errorType,
-    this.method,
-    this.params,
+    required this.errorCode,
+    required this.errorMsg,
+    required this.method,
+    required this.params,
   });
 
-  String get rpcError {
-    return ERROR_CODES[errorCode];
+  String? get rpcError {
+    return errorCodes[errorCode];
   }
 
-  String get message {
+  String? get message {
     return errorMsg;
   }
 

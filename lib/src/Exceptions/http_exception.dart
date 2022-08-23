@@ -1,10 +1,8 @@
-import 'dart:io';
-
 class HTTPException implements Exception {
   int code;
   String message;
 
-  HTTPException({this.code, this.message});
+  HTTPException({required this.code, required this.message});
 
   @override
   String toString() {
