@@ -1,34 +1,27 @@
-
 name: Dart
-
-on:
+'on':
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master ]
-
+    branches:
+      - master
 jobs:
   runner-job:
     runs-on: ubuntu-latest
     services:
       peercoind:
-        image: peercoin/peercoind:latest
-        environment:       
+        image: 'peercoin/peercoind:latest'
+        environment:
           - RPC_USER=rpc
           - RPC_PASSWORD=password
         ports:
-          - 9902:9902
-
-  run-dart-tests: 
-    runs-on: ubuntu-latest
+          - '9902:9902'
     steps:
-    - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
-
-    - name: Install dependencies
-      run: dart pub get
-
-    - name: Analyze project source
-      run: dart analyze
-
-    - name: Run tests
-      run: dart test
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Install dependencies
+        run: dart pub get
+      - name: Analyze project source
+        run: dart analyze
+      - name: Run tests
+        run: dart test
