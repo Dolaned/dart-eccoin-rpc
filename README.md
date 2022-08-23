@@ -1,3 +1,5 @@
+[![Tests](https://github.com/Vesta-wallet/dart-coin-rpc/actions/workflows/tests.yml/badge.svg)](https://github.com/Vesta-wallet/dart-coin-rpc/action/workflows/tests.yml)
+
 Forked from https://github.com/Dolaned/dart-eccoin-rpc
 
 Small libarary that allows JSON communcation with bitcoin-like RPC servers.
