@@ -12,9 +12,9 @@ jobs:
     services:
       peercoind:
         image: 'peercoin/peercoind:latest'
-        environment:
-          - RPC_USER=rpc
-          - RPC_PASSWORD=password
+        env:
+          RPC_USER: rpc
+          RPC_PASSWORD: password
         ports:
           - '9902:9902'
     steps:
