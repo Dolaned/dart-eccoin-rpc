@@ -1,4 +1,4 @@
-## 1.0.0
+## 1.0.1
 
 - Initial version, connects to any rpc
 
@@ -38,3 +38,7 @@
 ## 1.0.9
 
 - Cleaned up exception handling.
+
+## 1.1.0
+
+- Fork over, null safety, tests

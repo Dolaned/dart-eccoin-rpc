@@ -1,6 +1,6 @@
 name: dart_coin_rpc
 description: A simple RPC client for bitcoin-like coins created in dart.
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/Vesta-wallet/dart-coin-rpc
 
 environment:
