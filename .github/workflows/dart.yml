@@ -8,19 +8,20 @@ on:
     branches: [ master ]
 
 jobs:
-  run-ppc-container: 
+  runner-job:
+    runs-on: ubuntu-latest
+    services:
+      peercoind:
+        image: peercoin/peercoind:latest
+        environment:       
+          - RPC_USER=rpc
+          - RPC_PASSWORD=password
+        ports:
+          - 9902:9902
+
+  run-dart-tests: 
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout 
-      uses: actions/checkout@v2 
-
-    - uses: addnab/docker-run-action@v3
-      with:
-        image:  peercoin/peercoind:latest
-        options: --env RPC_USER="rpc" --env RPC_PASSWORD="password" -p "9902:9902"
-        run: |
-          echo "Running Container"
-
     - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
     - name: Install dependencies
