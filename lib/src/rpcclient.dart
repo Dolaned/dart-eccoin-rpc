@@ -145,7 +145,7 @@ class RPCClient {
         message: e.message,
       );
     } catch (e) {
-      rethrow;
+      // rethrow;
     } finally {
       client.close();
     }
