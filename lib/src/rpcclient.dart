@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:http_auth/http_auth.dart' as http_auth;
+import 'package:http/http.dart' as http;
+import 'package:http/retry.dart';
 import 'Exceptions/http_exception.dart';
 import 'Exceptions/rpc_exception.dart';
 
@@ -74,8 +75,14 @@ class RPCClient {
 
   Future<dynamic> call(var methodName, [var params]) async {
     // Build rpc auth headers.
-    var client = http_auth.BasicAuthClient(username, password);
-    var headers = {'Content-Type': 'application/json'};
+    var client = RetryClient(http.Client());
+    String basicAuth =
+        'Basic ${base64.encode(utf8.encode('$username:$password'))}';
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'authorization': basicAuth
+    };
 
     var url = getConnectionString();
     var body = {
@@ -139,6 +146,8 @@ class RPCClient {
       );
     } catch (e) {
       rethrow;
+    } finally {
+      client.close();
     }
   }
 }
