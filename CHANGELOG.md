@@ -1,3 +1,6 @@
+## 2.1.2
+- Cache http client for better performance
+
 ## 2.1.1
 - Disable rethrow to trigger http retry behaviour
 

@@ -14,7 +14,9 @@ void main() async {
     'try call with parameters',
     () async {
       var res = await client.call(
-          'validateaddress', ["p92W3t7YkKfQEPDb7cG9jQ6iMh7cpKLvwK"]) as Map;
+        'validateaddress',
+        ["p92W3t7YkKfQEPDb7cG9jQ6iMh7cpKLvwK"],
+      ) as Map;
       assert(res["isvalid"] == true);
     },
   );
