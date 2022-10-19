@@ -13,7 +13,8 @@ class RPCClient {
   String password;
   bool useSSL;
   RetryClient? _client;
-  late String _basicAuth;
+  late Uri _url;
+  late Map<String, String> _headers;
 
   RPCClient({
     required this.host,
@@ -67,27 +68,26 @@ class RPCClient {
     }
   }
 
-  String getConnectionString() {
+  Uri getConnectionString() {
     var urlString = 'http://';
     if (useSSL) {
       urlString = 'https://';
     }
-    return '$urlString$host:$port';
+    return Uri.parse('$urlString$host:$port');
   }
 
   Future<dynamic> call(var methodName, [var params]) async {
-    // Build rpc auth headers.
+    // init values
     if (_client == null) {
       _client = RetryClient(http.Client());
-      _basicAuth = 'Basic ${base64.encode(utf8.encode('$username:$password'))}';
+      _headers = {
+        'Content-Type': 'application/json',
+        'authorization':
+            'Basic ${base64.encode(utf8.encode('$username:$password'))}'
+      };
+      _url = getConnectionString();
     }
 
-    var headers = {
-      'Content-Type': 'application/json',
-      'authorization': _basicAuth
-    };
-
-    var url = getConnectionString();
     var body = {
       'jsonrpc': '2.0',
       'method': methodName,
@@ -97,9 +97,9 @@ class RPCClient {
 
     try {
       var response = await _client!.post(
-        Uri.parse(url),
+        _url,
         body: json.encode(body),
-        headers: headers,
+        headers: _headers,
       );
 
       switch (response.statusCode) {

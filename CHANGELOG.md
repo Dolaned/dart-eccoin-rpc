@@ -1,3 +1,6 @@
+## 2.1.3
+- More caching to improve performance
+
 ## 2.1.2
 - Cache http client for better performance
 
