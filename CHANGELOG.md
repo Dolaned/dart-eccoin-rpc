@@ -1,3 +1,6 @@
+## 2.1.4
+- Rebase HTTP calls on Dio lib
+
 ## 2.1.3
 - More caching to improve performance
 

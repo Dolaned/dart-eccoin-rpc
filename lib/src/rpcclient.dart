@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:http/http.dart' as http;
-import 'package:http/retry.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'Exceptions/http_exception.dart';
 import 'Exceptions/rpc_exception.dart';
 
@@ -12,8 +12,8 @@ class RPCClient {
   String username;
   String password;
   bool useSSL;
-  RetryClient? _client;
-  late Uri _url;
+  Dio? _dioClient;
+  late String _url;
   late Map<String, String> _headers;
 
   RPCClient({
@@ -68,26 +68,32 @@ class RPCClient {
     }
   }
 
-  Uri getConnectionString() {
+  String getConnectionString() {
     var urlString = 'http://';
     if (useSSL) {
       urlString = 'https://';
     }
-    return Uri.parse('$urlString$host:$port');
+    return '$urlString$host:$port';
   }
 
   Future<dynamic> call(var methodName, [var params]) async {
     // init values
-    if (_client == null) {
-      _client = RetryClient(http.Client());
+    if (_dioClient == null) {
       _headers = {
         'Content-Type': 'application/json',
         'authorization':
             'Basic ${base64.encode(utf8.encode('$username:$password'))}'
       };
       _url = getConnectionString();
+      _dioClient = Dio();
+      _dioClient!.interceptors.add(
+        RetryInterceptor(
+          dio: _dioClient!,
+          logPrint: print,
+          retries: 5,
+        ),
+      );
     }
-
     var body = {
       'jsonrpc': '2.0',
       'method': methodName,
@@ -96,59 +102,62 @@ class RPCClient {
     };
 
     try {
-      var response = await _client!.post(
+      var response = await _dioClient!.post(
         _url,
-        body: json.encode(body),
-        headers: _headers,
+        data: body,
+        options: Options(
+          headers: _headers,
+        ),
       );
-
-      switch (response.statusCode) {
-        case HttpStatus.ok:
-          var body = json.decode(response.body);
-          if (body['error'] != null) {
-            var error = body['error']['message'];
-            throw RPCException(
-              errorCode: error['code'],
-              errorMsg: error['message'],
-              method: methodName,
-              params: params,
-            );
-          }
-          return body['result'];
-        case HttpStatus.unauthorized:
-        case HttpStatus.forbidden:
-          throw HTTPException(
-            code: response.statusCode,
-            message: 'Unauthorized',
+      if (response.statusCode == HttpStatus.ok) {
+        var body = response.data;
+        if (body['error'] != null) {
+          var error = body['error']['message'];
+          throw RPCException(
+            errorCode: error['code'],
+            errorMsg: error['message'],
+            method: methodName,
+            params: params,
           );
-        case HttpStatus.internalServerError:
-          var body = json.decode(response.body);
-          if (body['error'] != null) {
-            var error = body['error'];
-            throw RPCException(
-              errorCode: error['code'],
-              errorMsg: error['message'],
-              method: methodName,
-              params: params,
-            );
-          }
-          throw HTTPException(
-            code: response.statusCode,
-            message: 'Internal Server Error',
-          );
-        default:
-          throw HTTPException(
-            code: response.statusCode,
-            message: 'Internal Server Error',
-          );
+        }
+        return body['result'];
       }
-    } on SocketException catch (e) {
-      throw HTTPException(
-        code: 500,
-        message: e.message,
-      );
-    } catch (e) {
-      // rethrow;
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.response) {
+        switch (e.error) {
+          case "Http status error [401]":
+            throw HTTPException(
+              code: 401,
+              message: 'Unauthorized',
+            );
+
+          case "Http status error [404]":
+            var body = e.response!.data;
+            if (body['error'] != null) {
+              var error = body['error'];
+              throw RPCException(
+                errorCode: error['code'],
+                errorMsg: error['message'],
+                method: methodName,
+                params: params ?? [],
+              );
+            }
+            throw HTTPException(
+              code: 500,
+              message: 'Internal Server Error',
+            );
+          default:
+            throw HTTPException(
+              code: 500,
+              message: 'Internal Server Error',
+            );
+        }
+      } else if (e.type == DioErrorType.other) {
+        throw HTTPException(
+          code: 500,
+          message: e.message,
+        );
+      }
     }
   }
 }
