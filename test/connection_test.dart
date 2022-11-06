@@ -13,7 +13,7 @@ void main() async {
     'success',
     () {
       test(
-        'sucess: try call with parameters',
+        'try call with parameters',
         () async {
           var res = await client.call(
             'validateaddress',
@@ -75,6 +75,20 @@ void main() async {
         () async {
           expect(
             () async => await client.call('helpwontbeprovided'),
+            throwsA(
+              isA<RPCException>(),
+            ),
+          );
+        },
+      );
+      test(
+        'try sendrawtransaction with invalid hex',
+        () async {
+          expect(
+            () async => await client.call(
+              'sendrawtransaction',
+              ["asdf"],
+            ),
             throwsA(
               isA<RPCException>(),
             ),

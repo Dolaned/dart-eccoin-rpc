@@ -1,3 +1,7 @@
+# 2.1.5
+- Correctly forward RPC errors that are not 404
+- disable loggint to print
+
 ## 2.1.4
 - Rebase HTTP calls on Dio lib
 

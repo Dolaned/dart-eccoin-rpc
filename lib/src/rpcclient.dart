@@ -89,7 +89,7 @@ class RPCClient {
       _dioClient!.interceptors.add(
         RetryInterceptor(
           dio: _dioClient!,
-          logPrint: print,
+          logPrint: null,
           retries: 5,
         ),
       );
@@ -124,6 +124,8 @@ class RPCClient {
       }
     } on DioError catch (e) {
       if (e.type == DioErrorType.response) {
+        var errorResponseBody = e.response!.data;
+
         switch (e.error) {
           case "Http status error [401]":
             throw HTTPException(
@@ -132,9 +134,8 @@ class RPCClient {
             );
 
           case "Http status error [404]":
-            var body = e.response!.data;
-            if (body['error'] != null) {
-              var error = body['error'];
+            if (errorResponseBody['error'] != null) {
+              var error = errorResponseBody['error'];
               throw RPCException(
                 errorCode: error['code'],
                 errorMsg: error['message'],
@@ -147,6 +148,15 @@ class RPCClient {
               message: 'Internal Server Error',
             );
           default:
+            if (errorResponseBody['error'] != null) {
+              var error = errorResponseBody['error'];
+              throw RPCException(
+                errorCode: error['code'],
+                errorMsg: error['message'],
+                method: methodName,
+                params: params,
+              );
+            }
             throw HTTPException(
               code: 500,
               message: 'Internal Server Error',
