@@ -1,3 +1,6 @@
+# 2.1.6 
+- Dependency updates
+
 # 2.1.5
 - Correctly forward RPC errors that are not 404
 - disable loggint to print

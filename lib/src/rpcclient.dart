@@ -123,7 +123,7 @@ class RPCClient {
         return body['result'];
       }
     } on DioError catch (e) {
-      if (e.type == DioErrorType.response) {
+      if (e.type == DioErrorType.badResponse) {
         var errorResponseBody = e.response!.data;
 
         switch (e.error) {
@@ -162,10 +162,10 @@ class RPCClient {
               message: 'Internal Server Error',
             );
         }
-      } else if (e.type == DioErrorType.other) {
+      } else if (e.type == DioErrorType.unknown) {
         throw HTTPException(
           code: 500,
-          message: e.message,
+          message: e.message!,
         );
       }
     }
